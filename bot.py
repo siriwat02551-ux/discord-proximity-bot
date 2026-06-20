@@ -915,16 +915,38 @@ async def login(interaction: discord.Interaction):
     await interaction.response.send_modal(LinkModal())
 
 
-@bot.tree.command(name="setup")
-async def setup(interaction: discord.Interaction, category: discord.CategoryChannel, start_channel: discord.VoiceChannel, role: discord.Role = None):
-    if not interaction.response.is_done(): await interaction.response.defer(ephemeral=True)
-    if not is_owner_or_admin(interaction): return await interaction.followup.send("คำสั่งนี้สำหรับผู้ดูแลระบบเท่านั้น", ephemeral=True)
-    
+from discord import app_commands
+
+@bot.tree.command(
+    name="setup",
+    description="ตั้งค่าระบบห้องเสียง"
+)
+@app_commands.describe(
+    category="หมวดหมู่ที่จะสร้างห้อง",
+    start_channel="ห้องเสียงเริ่มต้น",
+    role="ยศที่อนุญาตให้ใช้งาน"
+)
+async def setup(
+    interaction: discord.Interaction,
+    category: discord.CategoryChannel,
+    start_channel: discord.VoiceChannel,
+    role: discord.Role = None
+):
+    if not interaction.response.is_done():
+        await interaction.response.defer(ephemeral=True)
+
+    if not is_owner_or_admin(interaction):
+        return await interaction.followup.send(
+            "คำสั่งนี้สำหรับผู้ดูแลระบบเท่านั้น",
+            ephemeral=True
+        )
+
     update_whitelist(interaction.guild_id, interaction.guild.name)
     update_config(interaction.guild_id, category.id, start_channel.id, DEFAULT_RANGE)
-    
+
     embed = build_setup_embed()
     setup_msg = await interaction.channel.send(embed=embed, view=SetupView())
+
     data = get_guild_data(interaction.guild_id)
     data['setup_embed'] = {
         'channel_id': interaction.channel.id,
@@ -933,9 +955,9 @@ async def setup(interaction: discord.Interaction, category: discord.CategoryChan
         'start_channel_id': start_channel.id,
         'role_id': role.id if role else None
     }
+
     save_data()
     await interaction.followup.send("ตั้งค่าระบบเสร็จสมบูรณ์", ephemeral=True)
-
 
 @bot.tree.command(name="backup")
 async def backup_data(i: discord.Interaction):

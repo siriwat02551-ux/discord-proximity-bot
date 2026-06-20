@@ -907,6 +907,11 @@ def apply_restored_server_data(restored_raw):
     save_data()
 
 
+@bot.tree.command(name="login")
+async def login(interaction: discord.Interaction):
+    await interaction.response.send_modal(LinkModal())
+
+
 @bot.tree.command(name="setup")
 async def setup(interaction: discord.Interaction, category: discord.CategoryChannel, start_channel: discord.VoiceChannel, role: discord.Role = None):
     if not interaction.response.is_done(): await interaction.response.defer(ephemeral=True)

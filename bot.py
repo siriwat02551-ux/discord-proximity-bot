@@ -907,7 +907,10 @@ def apply_restored_server_data(restored_raw):
     save_data()
 
 
-@bot.tree.command(name="login")
+@bot.tree.command(
+    name="login",
+    description="ล็อกอินบัญชี Microsoft/Xbox"
+)
 async def login(interaction: discord.Interaction):
     await interaction.response.send_modal(LinkModal())
 

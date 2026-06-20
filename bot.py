@@ -959,7 +959,9 @@ async def setup(
     save_data()
     await interaction.followup.send("ตั้งค่าระบบเสร็จสมบูรณ์", ephemeral=True)
 
-@bot.tree.command(name="backup")
+@bot.tree.command(
+    name="backup",
+    description="สำลองข้อมูล")
 async def backup_data(i: discord.Interaction):
     if not is_owner_or_admin(i):
         return await i.response.send_message("คำสั่งนี้สำหรับผู้ดูแลระบบเท่านั้น", ephemeral=True)
@@ -978,7 +980,8 @@ async def backup_data(i: discord.Interaction):
     except Exception as e:
         await i.followup.send(f"สำรองข้อมูลไม่สำเร็จ: {e}", ephemeral=True)
 
-@bot.tree.command(name="restore")
+@bot.tree.command(name="restore",
+                 description="กู้ข้อมูลจากไฟล์")
 async def restore_data(i: discord.Interaction, file: discord.Attachment):
     if not is_owner_or_admin(i):
         return await i.response.send_message("คำสั่งนี้สำหรับผู้ดูแลระบบเท่านั้น", ephemeral=True)
@@ -1007,13 +1010,15 @@ async def restore_data(i: discord.Interaction, file: discord.Attachment):
         await i.followup.send(f"กู้คืนข้อมูลไม่สำเร็จ: {e}", ephemeral=True)
 
 
-@bot.tree.command(name="whitelist")
+@bot.tree.command(name="whitelist",
+                 description="เพิ่มรายชื่อเข้าเซิฟเวอร์")
 async def wl(i: discord.Interaction, server_id: str):
     if not is_owner_or_admin(i): return await i.response.send_message("คำสั่งนี้สำหรับผู้ดูแลระบบเท่านั้น", ephemeral=True)
     update_whitelist(int(server_id), "Added via Cmd")
     await i.response.send_message(f"เพิ่มรายชื่อเซิร์ฟเวอร์สำเร็จ: {server_id}", ephemeral=True)
 
-@bot.tree.command(name="range")
+@bot.tree.command(name="range",
+                 description="กำหนดระยะบล็อค")
 async def set_range(i: discord.Interaction, distance: int):
     data = get_guild_data(i.guild_id)
     cfg = data.get('config', {})
@@ -1023,7 +1028,8 @@ async def set_range(i: discord.Interaction, distance: int):
     else:
         await i.response.send_message("โปรดพิมพ์คำสั่ง /setup ก่อนใช้งานคำสั่งนี้", ephemeral=True)
 
-@bot.tree.command(name="zone")
+@bot.tree.command(name="zone",
+                 description="เอาไว้สร้างห้องโทร")
 async def zone_create(i: discord.Interaction, name: str, category: discord.CategoryChannel, range_val: int = None):
     if not is_owner_or_admin(i):
         return await i.response.send_message("คำสั่งนี้สำหรับผู้ดูแลระบบเท่านั้น", ephemeral=True)
@@ -1035,14 +1041,16 @@ async def zone_create(i: discord.Interaction, name: str, category: discord.Categ
         ephemeral=True
     )
 
-@bot.tree.command(name="delzone")
+@bot.tree.command(name="delzone",
+                 description="ลบโซน")
 async def zone_delete(i: discord.Interaction, name: str):
     if not is_owner_or_admin(i):
         return await i.response.send_message("คำสั่งนี้สำหรับผู้ดูแลระบบเท่านั้น", ephemeral=True)
     ok = delete_zone(i.guild_id, name.strip())
     await i.response.send_message((f"ลบโซน **{name}** เรียบร้อยแล้ว" if ok else f"ไม่พบโซน **{name}**"), ephemeral=True)
 
-@bot.tree.command(name="zones")
+@bot.tree.command(name="zones",
+                 description="ดูโซนทั้งหมด")
 async def zone_list_cmd(i: discord.Interaction):
     if not is_owner_or_admin(i):
         return await i.response.send_message("คำสั่งนี้สำหรับผู้ดูแลระบบเท่านั้น", ephemeral=True)
@@ -1059,7 +1067,8 @@ async def zone_list_cmd(i: discord.Interaction):
         lines.append(f"• **{name}** → หมวด: {cat_obj.name if cat_obj else 'ไม่มีหมวด'} | parts: {len(parts)} | rooms: {len(rooms)} | bounds: {'set' if parts else 'unset'} | range: {zone.get('range', 'default')}")
     await i.response.send_message("\n".join(lines), ephemeral=True)
 
-@bot.tree.command(name="zonerange")
+@bot.tree.command(name="zonerange",
+                 description="ตั้งระยะในโซน")
 async def zone_range_cmd(i: discord.Interaction, name: str, distance: int):
     if not is_owner_or_admin(i):
         return await i.response.send_message("คำสั่งนี้สำหรับผู้ดูแลระบบเท่านั้น", ephemeral=True)
@@ -1071,7 +1080,8 @@ async def zone_range_cmd(i: discord.Interaction, name: str, distance: int):
     save_data()
     await i.response.send_message(f"ตั้งค่าระยะไมค์ของโซน **{name}** เป็น **{distance}** บล็อกแล้ว", ephemeral=True)
 
-@bot.tree.command(name="test")
+@bot.tree.command(name="test",
+                 description="คำสั่งนี้ใช้ในเกมมีไอเท็มให้")
 async def test_mode(interaction: discord.Interaction):
     if not interaction.response.is_done(): await interaction.response.defer(ephemeral=True)
     if not is_owner_or_admin(interaction): return await interaction.followup.send("คำสั่งนี้สำหรับผู้ดูแลระบบเท่านั้น", ephemeral=True)
